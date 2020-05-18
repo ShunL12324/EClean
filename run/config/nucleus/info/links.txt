@@ -1,0 +1,5 @@
+#URL and Command links
+You can include different types of links in Nucleus to make rich info files.
+
+* &a[This is a link to the Nucleus homepage. Click me!](http://nucleuspowered.org)
+* &b[This will run the rules command](/rules)

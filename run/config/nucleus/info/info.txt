@@ -1,0 +1,2 @@
+#Default info page
+Hello! This page is the default info page for your server! You (or a server admin) can change this content

@@ -1,0 +1,27 @@
+#Minecraft Color Codes
+In Nucleus, to use these color codes in chat or other server messages, prefix the number or letter with the "&" symbol.
+
+&0 0 Black
+&1 1 Dark Blue
+&2 2 Dark Green
+&3 3 Dark Aqua
+&4 4 Dark Red
+&5 5 Dark Purple
+&6 6 Gold
+&7 7 Gray
+&8 8 Dark Gray
+&9 9 Blue
+&a a Green
+&b b Aqua
+&c c Red
+&d d Light Purple
+&e e Yellow
+&f f White
+
+&r k Magic &kMagic
+&l l Bold
+&m m Strikethrough
+&n n Underline
+&o o Italic
+
+&r r Reset
