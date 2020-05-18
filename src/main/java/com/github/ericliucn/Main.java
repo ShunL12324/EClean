@@ -51,7 +51,6 @@ public class Main {
         service = Sponge.getServiceManager().provideUnchecked(PlaceholderService.class);
 
         PlaceHolderManager placeHolderManager = new PlaceHolderManager();
-        placeHolderManager.init();
 
         try {
             Config.init();
