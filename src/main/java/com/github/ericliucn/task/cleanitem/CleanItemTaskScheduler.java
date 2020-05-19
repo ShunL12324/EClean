@@ -29,43 +29,40 @@ public class CleanItemTaskScheduler {
 
         final int[] next = {Config.interval};
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (next[0] == 0){
-                    try {new CleanItemTask();} catch (ObjectMappingException e) {e.printStackTrace();}
-                    next[0] = Config.interval;
-                    bars.forEach(bars -> bars.setVisible(false));
-                }else {
-                    Utils.NEXT_CLEAN_ITEM_TIME = next[0];
-                    if (Config.notifyTime.contains(next[0])) {
-                        Utils.broadCastWithPapi(Config.msg_notify);
-                        Utils.playSoundForEveryone(SoundTypes.BLOCK_STONE_BUTTON_CLICK_ON);
-                    }
-
-                    if (Config.enableBossBar && next[0] == Config.startBossBar){
-                        createBossBar();
-                        Sponge.getServer().getOnlinePlayers().forEach(player -> {
-                            ServerBossBar bar = bossBar
-                                    .name(Utils.papiReplace(Config.msg_bar_title, player, player))
-                                    .visible(true)
-                                    .build();
-                            bar.addPlayer(player);
-                            bars.add(bar);
-                        });
-                    }else if (Config.enableBossBar && next[0] < Config.startBossBar){
-                        float numerator = next[0];
-                        float denominator = Config.startBossBar;
-                        float percent = numerator/denominator;
-                        bars.forEach(serverBossBar -> {
-                            Player player = (Player) serverBossBar.getPlayers().toArray()[0];
-                            serverBossBar.setName(Utils.papiReplace(Config.msg_bar_title, player, player));
-                            serverBossBar.setPercent(percent);
-                        });
-                    }
-
-                    next[0]--;
+        Runnable runnable = () -> {
+            if (next[0] == 0){
+                try {new CleanItemTask();} catch (ObjectMappingException e) {e.printStackTrace();}
+                next[0] = Config.interval;
+                bars.forEach(bars -> bars.setVisible(false));
+            }else {
+                Utils.NEXT_CLEAN_ITEM_TIME = next[0];
+                if (Config.notifyTime.contains(next[0])) {
+                    Utils.broadCastWithPapi(Config.msg_notify, false);
+                    Utils.playSoundForEveryone(SoundTypes.BLOCK_STONE_BUTTON_CLICK_ON);
                 }
+
+                if (Config.enableBossBar && next[0] == Config.startBossBar){
+                    createBossBar();
+                    Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                        ServerBossBar bar = bossBar
+                                .name(Utils.papiReplace(Config.msg_bar_title, player, player))
+                                .visible(true)
+                                .build();
+                        bar.addPlayer(player);
+                        bars.add(bar);
+                    });
+                }else if (Config.enableBossBar && next[0] < Config.startBossBar){
+                    float numerator = next[0];
+                    float denominator = Config.startBossBar;
+                    float percent = numerator/denominator;
+                    bars.forEach(serverBossBar -> {
+                        Player player = (Player) serverBossBar.getPlayers().toArray()[0];
+                        serverBossBar.setName(Utils.papiReplace(Config.msg_bar_title, player, player));
+                        serverBossBar.setPercent(percent);
+                    });
+                }
+
+                next[0]--;
             }
         };
 

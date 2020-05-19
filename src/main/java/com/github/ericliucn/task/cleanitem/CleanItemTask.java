@@ -68,7 +68,7 @@ public class CleanItemTask {
     }
 
     private void broadCast(){
-        Utils.broadCastWithPapi(Config.msg_clean_finished);
+        Utils.broadCastWithPapi(Config.msg_clean_finished, true);
         Utils.playSoundForEveryone(SoundTypes.BLOCK_ANVIL_LAND);
     }
 

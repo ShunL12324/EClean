@@ -2,6 +2,7 @@ package com.github.ericliucn.utils;
 
 import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.Main;
+import com.github.ericliucn.config.Config;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
@@ -10,6 +11,10 @@ import org.spongepowered.api.effect.sound.SoundType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.ClickAction;
+import org.spongepowered.api.text.action.HoverAction;
+import org.spongepowered.api.text.action.TextAction;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
 import org.spongepowered.api.world.World;
 
@@ -26,14 +31,24 @@ public class Utils {
         return TextSerializers.FORMATTING_CODE.deserialize(string);
     }
 
-    public static void broadCastWithPapi(String string){
+    public static void broadCastWithPapi(String string, boolean canOpenLastClean){
         Sponge.getServer().getOnlinePlayers().forEach(player -> {
-            player.sendMessage(papiReplace(string, player, player));
+            Text text = papiReplace(string, player, player);
+            if (canOpenLastClean){
+                Text hoverMsg = papiReplace(Config.msg_clean_finished_hover, player, player);
+                HoverAction.ShowText showText = TextActions.showText(hoverMsg);
+                ClickAction.RunCommand runCommand = TextActions.runCommand("/eclean last");
+                text = text.toBuilder()
+                        .onHover(showText)
+                        .onClick(runCommand)
+                        .build();
+            }
+            player.sendMessage(text);
         });
     }
 
     public static Text papiReplace(String string, CommandSource source, Player player){
-        return Main.instance.service.replacePlaceholders(string, source, player);
+        return Main.instance.service.replacePlaceholders(formatStr(string), source, player);
     }
 
     public static void playSoundForEveryone(SoundType soundType){

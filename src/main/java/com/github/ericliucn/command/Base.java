@@ -19,6 +19,7 @@ public class Base implements CommandExecutor {
                 .executor(new Base())
                 .child(Clean.build(), "c", "clean")
                 .child(Reload.build(), "reload")
+                .child(Last.build(), "last")
                 .build();
     }
 }
