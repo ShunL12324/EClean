@@ -2,18 +2,8 @@ package com.github.ericliucn.config;
 
 import com.github.ericliucn.Main;
 import com.github.ericliucn.utils.Utils;
-import me.rojo8399.placeholderapi.Listening;
 import me.rojo8399.placeholderapi.Placeholder;
-import me.rojo8399.placeholderapi.PlaceholderService;
 import me.rojo8399.placeholderapi.Token;
-import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.state.GameStartingServerEvent;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.channel.MessageReceiver;
 
 public class PlaceHolderManager {
 
@@ -43,7 +33,7 @@ public class PlaceHolderManager {
             case LAST_CLEAN_NUM:
                 return Utils.LAST_CLEAN_ITEM_COUNT;
             case NEXT_CLEAN_TIME:
-                return 30;
+                return Utils.NEXT_CLEAN_ITEM_TIME;
             default:
                 return 0;
         }
