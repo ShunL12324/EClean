@@ -1,6 +1,7 @@
 package com.github.ericliucn.command;
 
 import com.github.ericliucn.task.cleanitem.CleanItemTask;
+import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -20,20 +21,12 @@ public class Clean implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         Optional<World> optionalWorld = args.getOne("world");
-        if(optionalWorld.isPresent()){
-            CleanItemTask cleanItemTask = new CleanItemTask(optionalWorld.get());
-
-        }else {
-            int chunkCount = 0;
-            int itemCount = 0;
-            for (World world:Sponge.getServer().getWorlds()
-                 ) {
-                CleanItemTask cleanItemTask = new CleanItemTask(world);
-                chunkCount += cleanItemTask.getCleanedChunk();
-                itemCount += cleanItemTask.getCleanedItemCount();
+        if (optionalWorld.isPresent()){
+            try {
+                CleanItemTask cleanItemTask = new CleanItemTask();
+            } catch (ObjectMappingException e) {
+                e.printStackTrace();
             }
-
-            src.sendMessage(Text.of(String.format("共清理了%d个区块, %d个物品", chunkCount, itemCount)));
         }
 
         return CommandResult.success();

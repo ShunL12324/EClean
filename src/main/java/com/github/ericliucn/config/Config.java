@@ -9,6 +9,8 @@ import org.spongepowered.api.asset.Asset;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 public class Config {
@@ -18,7 +20,6 @@ public class Config {
     private final static ConfigurationLoader<CommentedConfigurationNode> loader = HoconConfigurationLoader.builder().setFile(conf).build();
     public static Properties msg = new Properties();
     public static CommentedConfigurationNode rootNode;
-    public static int LAST_CLEAN_ITEM_COUNT = 0;
 
     public static void init() throws IOException {
         if (!Main.instance.file.exists()){
@@ -41,7 +42,7 @@ public class Config {
 
     public static void load() throws IOException{
         rootNode = loader.load();
-        msg.load(new FileInputStream(message));
+        msg.load(new InputStreamReader(new FileInputStream(message), StandardCharsets.UTF_8));
     }
 
     public static void save() throws IOException{
