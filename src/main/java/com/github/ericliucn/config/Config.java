@@ -29,6 +29,8 @@ public class Config {
     public static String msg_bar_title;
     public static String msg_clean_finished;
     public static String msg_clean_finished_hover;
+    public static String msg_inv_title;
+    public static String msg_item_has_taken;
 
     //清理间隔时间
     public static int interval;
@@ -95,6 +97,8 @@ public class Config {
         msg_bar_title = Config.msg.getProperty("BossBarTitle");
         msg_clean_finished = Config.msg.getProperty("CleanFinished");
         msg_clean_finished_hover = Config.msg.getProperty("CleanFinishedOnHover");
+        msg_inv_title = Config.msg.getProperty("InventoryTitle");
+        msg_item_has_taken = Config.msg.getProperty("ItemHasBeenTakenByOthers");
     }
 
     public static void save() throws IOException{

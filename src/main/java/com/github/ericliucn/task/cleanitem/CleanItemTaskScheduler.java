@@ -12,11 +12,9 @@ import org.spongepowered.api.boss.ServerBossBar;
 import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
-import org.spongepowered.common.boss.ServerBossBarBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class CleanItemTaskScheduler {

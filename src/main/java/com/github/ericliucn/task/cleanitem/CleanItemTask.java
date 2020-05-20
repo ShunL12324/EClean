@@ -3,7 +3,6 @@ package com.github.ericliucn.task.cleanitem;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
-import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.key.Keys;
@@ -37,8 +36,7 @@ public class CleanItemTask {
         );
         //写入数据
         Utils.LAST_CLEAN_ITEM_COUNT = this.cleanedItemCount;
-        Utils.LAST_CLEAN_ITEM_STACKS.clear();
-        Utils.LAST_CLEAN_ITEM_STACKS = this.cleanedItemStack;
+        Utils.setLastCleanItemStacks(this.cleanedItemStack);
         //广播消息
         this.broadCast();
     }
@@ -60,7 +58,7 @@ public class CleanItemTask {
                         Vector3d position = entity.getLocation().getPosition();
                         if (Config.particleEffect) Utils.spawnParticle(world, position);
                         item.remove();
-                        this.cleanedItemCount += 1;
+                        this.cleanedItemCount += itemStack.getQuantity();
                         this.cleanedItemStack.add(itemStack);
                     }
                 }
