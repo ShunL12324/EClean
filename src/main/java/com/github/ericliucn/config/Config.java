@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -56,6 +57,11 @@ public class Config {
     //移除物品动画
     public static boolean particleEffect;
 
+    //需要检测更新频率的方块
+    public static List<String> blocksNeedWatch = new ArrayList<>();
+    //是否开启自动清理高频方块
+    public static boolean isEnableCleanBlock;
+
 
     public static void init() throws IOException, ObjectMappingException {
         if (!Main.instance.file.exists()){
@@ -91,6 +97,9 @@ public class Config {
         skipItems = rootNode.getNode("ItemClean", "Filter", "Items").getList(TypeToken.of(String.class));
         barColor = rootNode.getNode("ItemClean", "NotifyBossBar", "Color").getString();
         particleEffect = rootNode.getNode("ItemClean", "ParticleEffectWhenItemRemove").getBoolean();
+
+        blocksNeedWatch = rootNode.getNode("CheckBlock", "Blocks").getList(TypeToken.of(String.class));
+        isEnableCleanBlock = rootNode.getNode("CheckBlock", "Enable").getBoolean();
 
         //msg
         msg_notify = Config.msg.getProperty("CleanNotify");
