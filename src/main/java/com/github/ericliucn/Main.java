@@ -16,9 +16,13 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(
         id = "eclean",
@@ -49,6 +53,10 @@ public class Main {
 
     public CleanItemTaskScheduler cleanItemTaskScheduler;
     public CleanBlockTaskScheduler cleanBlockTaskScheduler;
+    public static int LAST_CLEANED_ITEM_COUNT = 0;
+    public static int NEXT_CLEAN_ITEM_TIME = 0;
+    public static Map<Location<World>, Integer> BLOCK_TICK_COUNT = new HashMap<>();
+    public static boolean IS_CHECK_TASK_CURRENTLY_ON = false;
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) throws ObjectMappingException {
@@ -68,7 +76,9 @@ public class Main {
 
         //开始计划任务
         cleanItemTaskScheduler = new CleanItemTaskScheduler();
-        cleanBlockTaskScheduler = new CleanBlockTaskScheduler();
+        if (Config.isEnableCleanBlock) {
+            cleanBlockTaskScheduler = new CleanBlockTaskScheduler();
+        }
 
         Sponge.getCommandManager().register(this, Base.build(), "eclean");
     }

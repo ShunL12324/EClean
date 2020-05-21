@@ -1,7 +1,10 @@
 package com.github.ericliucn.task.cleanitem;
 
 import com.flowpowered.math.vector.Vector3d;
+import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
+import com.github.ericliucn.config.PlaceHolderManager;
+import com.github.ericliucn.inventory.CleanedItemInv;
 import com.github.ericliucn.utils.Utils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
@@ -10,6 +13,7 @@ import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
@@ -17,15 +21,15 @@ import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-//清理掉落物任务
+//clean dropped item task
 public class CleanItemTask {
 
-    //清理掉的物品
+    //item has been cleaned
     private final List<ItemStack> cleanedItemStack = new ArrayList<>();
-    //清理掉的物品计数
+    //item cleaned count
     private int cleanedItemCount = 0;
 
-    //清理任务constructor
+    //constructor
     public CleanItemTask() throws ObjectMappingException {
         Sponge.getServer().getWorlds().forEach(
                 world -> {
@@ -35,28 +39,37 @@ public class CleanItemTask {
                 }
         );
         //写入数据
-        Utils.LAST_CLEAN_ITEM_COUNT = this.cleanedItemCount;
-        Utils.setLastCleanItemStacks(this.cleanedItemStack);
+        Main.LAST_CLEANED_ITEM_COUNT = this.cleanedItemCount;
+        CleanedItemInv.genInvElements(this.cleanedItemStack);
         //广播消息
-        this.broadCast();
+        this.message();
     }
 
     private void cleanItem(World world){
         world.getEntities().forEach(
                 entity -> {
                     if (entity.getType().equals(EntityTypes.ITEM)){
+                        //item entity
                         Item item = (Item)entity;
-                        ItemStack itemStack = ItemStack.builder().fromSnapshot(item.item().get()).build();
+                        //item item stack
+                        ItemStack itemStack = item.item().get().createStack();
+                        //check item through item's id
                         if (isSkipItem(itemStack)) return;
+                        //check item whether it has NBT and whether item with nbt need to be remove
                         if (Config.skipItemHasNBT && itemHasNBT(itemStack)) return;
-                        if (Config.skipItemHasLore && itemHansLore(itemStack)) return;
+                        //check whether item has lore need to be remove and whether the item has lore
+                        if (Config.skipItemHasLore && itemHasLore(itemStack)) return;
+                        //check whether item has target lore (won't be remove)
                         try {
                             if (Config.loreMatch.size() != 0 && itemHasTargetLore(itemStack)) return;
                         } catch (ObjectMappingException e) {
                             e.printStackTrace();
                         }
-                        Vector3d position = entity.getLocation().getPosition();
-                        if (Config.particleEffect) Utils.spawnParticle(world, position);
+                        //if config effect is on, spawn effect
+                        if (Config.particleEffect) {
+                            Utils.spawnParticle(world, item.getLocation().getPosition());
+                        }
+                        //remove item and add count
                         item.remove();
                         this.cleanedItemCount += itemStack.getQuantity();
                         this.cleanedItemStack.add(itemStack);
@@ -65,28 +78,19 @@ public class CleanItemTask {
         );
     }
 
-    private void broadCast(){
+
+    private void message(){
         Utils.broadCastWithPapi(Config.msg_clean_finished, true);
         if (Config.soundWhenNotify) {
             Utils.playSoundForEveryone(SoundTypes.BLOCK_ANVIL_LAND);
         }
-    }
-
-    //获取清理物品数量
-    public int getCleanedItemCount() {
-        return cleanedItemCount;
-    }
-
-    //获取清理的物品
-    public List<ItemStack> getCleanedItemStack() {
-        return cleanedItemStack;
     }
     
     private static boolean itemHasNBT(ItemStack itemStack){
         return ItemStackUtil.toNative(itemStack).hasTagCompound();
     }
 
-    private static boolean itemHansLore(ItemStack itemStack){
+    private static boolean itemHasLore(ItemStack itemStack){
         return itemStack.get(Keys.ITEM_LORE).isPresent();
     }
 
@@ -94,7 +98,6 @@ public class CleanItemTask {
         if (!itemStack.get(Keys.ITEM_LORE).isPresent()){
             return false;
         }
-
         List<Text> loreList = itemStack.get(Keys.ITEM_LORE).get();
         for (Text text:loreList){
             if (Config.loreMatch.contains(text.toPlain())) return true;

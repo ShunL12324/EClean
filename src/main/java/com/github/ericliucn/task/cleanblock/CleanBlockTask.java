@@ -21,29 +21,29 @@ public class CleanBlockTask {
     public EventListener<ChangeBlockEvent.Modify> listener = new BlockListener();
 
     public CleanBlockTask(CommandSource source){
-        if (!Utils.IS_CHECK_TASK_CURRENTLY_ON) {
-            Utils.BLOCK_TICK_COUNT.clear();
-            Utils.IS_CHECK_TASK_CURRENTLY_ON = true;
+        if (!Main.IS_CHECK_TASK_CURRENTLY_ON) {
+            Main.BLOCK_TICK_COUNT.clear();
+            Main.IS_CHECK_TASK_CURRENTLY_ON = true;
             Utils.registerListener(ChangeBlockEvent.Modify.class, listener);
-            this.unregister();
+            this.closeChecker();
         }else {
             source.sendMessage(Utils.formatStr(Config.msg_last_task_not_finished));
         }
     }
 
-    private void unregister(){
+    private void closeChecker(){
         Sponge.getScheduler().createTaskBuilder()
                 .delay(5, TimeUnit.SECONDS)
                 .execute(()->{
                     Utils.unregisterListener(listener);
-                    processResult();
-                    Utils.IS_CHECK_TASK_CURRENTLY_ON = false;
+                    this.processResult();
+                    Main.IS_CHECK_TASK_CURRENTLY_ON = false;
                 })
                 .submit(Main.instance);
     }
 
     private void processResult(){
-        Utils.BLOCK_TICK_COUNT.forEach(((location, integer) -> {
+        Main.BLOCK_TICK_COUNT.forEach(((location, integer) -> {
             World world = location.getExtent();
             Vector3d position = location.getPosition();
             String name = location.getBlock().getType().getTranslation().get();

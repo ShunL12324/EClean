@@ -1,5 +1,6 @@
 package com.github.ericliucn.task.cleanblock;
 
+import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.block.BlockSnapshot;
@@ -17,10 +18,10 @@ public class BlockListener implements EventListener<ChangeBlockEvent.Modify> {
                     String id = blockSnapshot.getState().getType().getId();
                     if (Config.blocksNeedWatch.containsKey(id)){
                         blockSnapshot.getLocation().ifPresent(location -> {
-                            if (Utils.BLOCK_TICK_COUNT.containsKey(location)){
-                                Utils.BLOCK_TICK_COUNT.put(location, Utils.BLOCK_TICK_COUNT.get(location) + 1);
+                            if (Main.BLOCK_TICK_COUNT.containsKey(location)){
+                                Main.BLOCK_TICK_COUNT.put(location, Main.BLOCK_TICK_COUNT.get(location) + 1);
                             }else {
-                                Utils.BLOCK_TICK_COUNT.put(location, 1);
+                                Main.BLOCK_TICK_COUNT.put(location, 1);
                             }
                         });
                     }

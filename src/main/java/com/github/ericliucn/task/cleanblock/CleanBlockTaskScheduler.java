@@ -11,18 +11,11 @@ import java.util.concurrent.TimeUnit;
 
 public class CleanBlockTaskScheduler {
 
-    public Task task;
+    private final Task task;
 
     public CleanBlockTaskScheduler(){
 
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (!Utils.IS_CHECK_TASK_CURRENTLY_ON){
-                    new CleanBlockTask(Sponge.getServer().getConsole());
-                }
-            }
-        };
+        Runnable runnable = () -> new CleanBlockTask(Sponge.getServer().getConsole());
 
         task = Sponge.getScheduler().createTaskBuilder()
                 .delay(Config.cleanBlockInterval, TimeUnit.SECONDS)
@@ -30,5 +23,9 @@ public class CleanBlockTaskScheduler {
                 .interval(Config.cleanBlockInterval, TimeUnit.SECONDS)
                 .name("EClean Clean Block Task")
                 .submit(Main.instance);
+    }
+
+    public void cancel(){
+        this.task.cancel();
     }
 }

@@ -14,12 +14,13 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CleanItemTaskScheduler {
 
-    public Task task;
+    private final Task task;
     private ServerBossBar.Builder bossBar;
     private final List<ServerBossBar> bars = new ArrayList<>();
 
@@ -28,12 +29,23 @@ public class CleanItemTaskScheduler {
         final int[] next = {Config.interval};
 
         Runnable runnable = () -> {
+
+            Main.NEXT_CLEAN_ITEM_TIME = next[0];
+
             if (next[0] == 0){
-                try {new CleanItemTask();} catch (ObjectMappingException e) {e.printStackTrace();}
+
+                try {
+                    new CleanItemTask();
+                } catch (ObjectMappingException e) {
+                    e.printStackTrace();
+                }
+
                 next[0] = Config.interval;
-                bars.forEach(bars -> bars.setVisible(false));
+
+                this.bars.forEach(bars -> bars.setVisible(false));
+                this.bars.clear();
             }else {
-                Utils.NEXT_CLEAN_ITEM_TIME = next[0];
+
                 if (Config.notifyTime.contains(next[0])) {
                     Utils.broadCastWithPapi(Config.msg_notify, false);
                     if (Config.soundWhenNotify) {
@@ -41,25 +53,31 @@ public class CleanItemTaskScheduler {
                     }
                 }
 
-                if (Config.enableBossBar && next[0] == Config.startBossBar){
-                    createBossBar();
-                    Sponge.getServer().getOnlinePlayers().forEach(player -> {
-                        ServerBossBar bar = bossBar
-                                .name(Utils.papiReplace(Config.msg_bar_title, player, player))
-                                .visible(true)
-                                .build();
-                        bar.addPlayer(player);
-                        bars.add(bar);
-                    });
-                }else if (Config.enableBossBar && next[0] < Config.startBossBar){
+                if (Config.enableBossBar && next[0] <= Config.startBossBar){
                     float numerator = next[0];
                     float denominator = Config.startBossBar;
                     float percent = numerator/denominator;
-                    bars.forEach(serverBossBar -> {
-                        Player player = (Player) serverBossBar.getPlayers().toArray()[0];
-                        serverBossBar.setName(Utils.papiReplace(Config.msg_bar_title, player, player));
-                        serverBossBar.setPercent(percent);
-                    });
+                    Collection<Player> players = Sponge.getServer().getOnlinePlayers();
+                    if (this.bars.size() < players.size()) {
+                        this.bars.forEach(serverBossBar -> serverBossBar.setVisible(false));
+                        this.bars.clear();
+                        this.setupBossBar();
+                        Sponge.getServer().getOnlinePlayers().forEach(player -> {
+                            ServerBossBar bar = bossBar
+                                    .name(Utils.papiReplace(Config.msg_bar_title, player, player))
+                                    .visible(true)
+                                    .percent(percent)
+                                    .build()
+                                    .addPlayer(player);
+                            this.bars.add(bar);
+                        });
+                    }else {
+                        bars.forEach(serverBossBar -> {
+                            Player player = (Player) serverBossBar.getPlayers().toArray()[0];
+                            serverBossBar.setName(Utils.papiReplace(Config.msg_bar_title, player, player));
+                            serverBossBar.setPercent(percent);
+                        });
+                    }
                 }
 
                 next[0]--;
@@ -75,7 +93,7 @@ public class CleanItemTaskScheduler {
 
     }
 
-    private void createBossBar(){
+    private void setupBossBar(){
 
         BossBarColor barColor;
 
@@ -106,9 +124,7 @@ public class CleanItemTaskScheduler {
         bossBar = ServerBossBar.builder()
                 .visible(true)
                 .overlay(BossBarOverlays.PROGRESS)
-                .percent(1F)
                 .color(barColor);
-
     }
 
     public void cancel(){

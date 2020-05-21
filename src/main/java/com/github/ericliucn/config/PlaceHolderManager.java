@@ -31,9 +31,9 @@ public class PlaceHolderManager {
     public int getInfo(@Token String string){
         switch (string){
             case LAST_CLEAN_NUM:
-                return Utils.LAST_CLEAN_ITEM_COUNT;
+                return Main.LAST_CLEANED_ITEM_COUNT;
             case NEXT_CLEAN_TIME:
-                return Utils.NEXT_CLEAN_ITEM_TIME;
+                return Main.NEXT_CLEAN_ITEM_TIME;
             default:
                 return 0;
         }

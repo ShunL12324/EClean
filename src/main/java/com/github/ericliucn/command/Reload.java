@@ -2,6 +2,7 @@ package com.github.ericliucn.command;
 
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
+import com.github.ericliucn.task.cleanblock.CleanBlockTaskScheduler;
 import com.github.ericliucn.task.cleanitem.CleanItemTaskScheduler;
 import com.github.ericliucn.utils.Utils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -20,6 +21,8 @@ public class Reload implements CommandExecutor {
             Config.load();
             Main.instance.cleanItemTaskScheduler.cancel();
             Main.instance.cleanItemTaskScheduler = new CleanItemTaskScheduler();
+            Main.instance.cleanBlockTaskScheduler.cancel();
+            Main.instance.cleanBlockTaskScheduler = new CleanBlockTaskScheduler();
         }catch (IOException | ObjectMappingException e){
             e.printStackTrace();
         }
