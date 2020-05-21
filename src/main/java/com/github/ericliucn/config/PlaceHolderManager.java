@@ -1,7 +1,6 @@
 package com.github.ericliucn.config;
 
 import com.github.ericliucn.Main;
-import com.github.ericliucn.utils.Utils;
 import me.rojo8399.placeholderapi.Placeholder;
 import me.rojo8399.placeholderapi.Token;
 

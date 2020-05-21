@@ -2,8 +2,6 @@ package com.github.ericliucn.task.cleanblock;
 
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
-import com.github.ericliucn.task.cleanitem.CleanItemTaskScheduler;
-import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.Task;
 

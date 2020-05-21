@@ -1,7 +1,6 @@
 package com.github.ericliucn.command;
 
 import com.github.ericliucn.inventory.CleanedItemInv;
-import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;

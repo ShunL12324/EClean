@@ -3,35 +3,20 @@ package com.github.ericliucn.utils;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
-import com.github.ericliucn.task.cleanitem.CleanItemTaskScheduler;
-import com.mcsimonflash.sponge.teslalibs.inventory.Action;
-import com.mcsimonflash.sponge.teslalibs.inventory.Element;
-import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
-import com.mcsimonflash.sponge.teslalibs.inventory.Page;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundType;
-import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.*;
-import org.spongepowered.api.item.inventory.property.InventoryTitle;
-import org.spongepowered.api.item.inventory.property.SlotIndex;
-import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
-import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-
-import java.util.*;
 
 public class Utils {
 

@@ -5,8 +5,6 @@ import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;

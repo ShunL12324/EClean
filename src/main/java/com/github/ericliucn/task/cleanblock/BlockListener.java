@@ -2,7 +2,6 @@ package com.github.ericliucn.task.cleanblock;
 
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
-import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;

@@ -1,9 +1,7 @@
 package com.github.ericliucn.task.cleanitem;
 
-import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
-import com.github.ericliucn.config.PlaceHolderManager;
 import com.github.ericliucn.inventory.CleanedItemInv;
 import com.github.ericliucn.utils.Utils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -13,7 +11,6 @@ import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
 import org.spongepowered.common.item.inventory.util.ItemStackUtil;
