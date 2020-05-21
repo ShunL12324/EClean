@@ -3,14 +3,13 @@ package com.github.ericliucn.utils;
 import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
+import com.github.ericliucn.task.cleanitem.CleanItemTaskScheduler;
 import com.mcsimonflash.sponge.teslalibs.inventory.Action;
 import com.mcsimonflash.sponge.teslalibs.inventory.Element;
 import com.mcsimonflash.sponge.teslalibs.inventory.Layout;
 import com.mcsimonflash.sponge.teslalibs.inventory.Page;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.effect.Viewer;
 import org.spongepowered.api.effect.particle.ParticleEffect;
 import org.spongepowered.api.effect.particle.ParticleTypes;
 import org.spongepowered.api.effect.sound.SoundType;
@@ -20,21 +19,17 @@ import org.spongepowered.api.event.Event;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
-import org.spongepowered.api.item.inventory.Inventory;
-import org.spongepowered.api.item.inventory.InventoryArchetypes;
-import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.item.inventory.Slot;
+import org.spongepowered.api.item.inventory.*;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.item.inventory.property.SlotIndex;
-import org.spongepowered.api.item.inventory.query.QueryOperation;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.ClickAction;
 import org.spongepowered.api.text.action.HoverAction;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-import org.spongepowered.common.mixin.api.mcp.entity.player.EntityPlayerMPMixin_API;
 
 import java.util.*;
 
@@ -43,7 +38,8 @@ public class Utils {
     public static int LAST_CLEAN_ITEM_COUNT = 0;
     public static int NEXT_CLEAN_ITEM_TIME = 0;
     public static List<Element> CLEANED_ITEM_STACK = new ArrayList<>();
-    public static Map<BlockSnapshot, Integer> BLOCK_TICK_COUNT = new HashMap<>();
+    public static Map<Location<World>, Integer> BLOCK_TICK_COUNT = new HashMap<>();
+    public static boolean IS_CHECK_TASK_CURRENTLY_ON = false;
 
     public static Text formatStr(String string){
         return TextSerializers.FORMATTING_CODE.deserialize(string);
@@ -120,11 +116,16 @@ public class Utils {
         click.getSlot().getInventoryProperty(SlotIndex.class).ifPresent(slotIndex -> {
             Optional<Integer> optionalInteger = Optional.ofNullable(slotIndex.getValue());
             optionalInteger.ifPresent(index -> {
-                if (CLEANED_ITEM_STACK.contains(elementClick) && index >= 0 && index < 45){
-                    click.getEvent().setCancelled(false);
-                    CLEANED_ITEM_STACK.remove(elementClick);
-                }else {
-                    player.sendMessage(papiReplace(Config.msg_item_has_taken, player, player));
+
+                ItemStackSnapshot stackSnapshot = click.getEvent().getTransactions().get(0).getFinal();
+
+                if (index >= 0 && index < 45 && stackSnapshot.isEmpty()){
+                    if (CLEANED_ITEM_STACK.contains(elementClick)) {
+                        click.getEvent().setCancelled(false);
+                        CLEANED_ITEM_STACK.remove(elementClick);
+                    }else {
+                        player.sendMessage(Utils.papiReplace(Config.msg_item_has_taken, player, player));
+                    }
                 }
             });
         });

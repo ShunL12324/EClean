@@ -67,7 +67,9 @@ public class CleanItemTask {
 
     private void broadCast(){
         Utils.broadCastWithPapi(Config.msg_clean_finished, true);
-        Utils.playSoundForEveryone(SoundTypes.BLOCK_ANVIL_LAND);
+        if (Config.soundWhenNotify) {
+            Utils.playSoundForEveryone(SoundTypes.BLOCK_ANVIL_LAND);
+        }
     }
 
     //获取清理物品数量

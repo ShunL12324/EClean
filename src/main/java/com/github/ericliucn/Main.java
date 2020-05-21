@@ -3,6 +3,7 @@ package com.github.ericliucn;
 import com.github.ericliucn.command.Base;
 import com.github.ericliucn.config.Config;
 import com.github.ericliucn.config.PlaceHolderManager;
+import com.github.ericliucn.task.cleanblock.CleanBlockTaskScheduler;
 import com.github.ericliucn.task.cleanitem.CleanItemTaskScheduler;
 import com.google.inject.Inject;
 import me.rojo8399.placeholderapi.PlaceholderService;
@@ -47,6 +48,7 @@ public class Main {
     public PlaceholderService service;
 
     public CleanItemTaskScheduler cleanItemTaskScheduler;
+    public CleanBlockTaskScheduler cleanBlockTaskScheduler;
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) throws ObjectMappingException {
@@ -66,6 +68,7 @@ public class Main {
 
         //开始计划任务
         cleanItemTaskScheduler = new CleanItemTaskScheduler();
+        cleanBlockTaskScheduler = new CleanBlockTaskScheduler();
 
         Sponge.getCommandManager().register(this, Base.build(), "eclean");
     }

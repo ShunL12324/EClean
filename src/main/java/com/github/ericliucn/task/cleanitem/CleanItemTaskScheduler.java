@@ -36,7 +36,9 @@ public class CleanItemTaskScheduler {
                 Utils.NEXT_CLEAN_ITEM_TIME = next[0];
                 if (Config.notifyTime.contains(next[0])) {
                     Utils.broadCastWithPapi(Config.msg_notify, false);
-                    Utils.playSoundForEveryone(SoundTypes.BLOCK_STONE_BUTTON_CLICK_ON);
+                    if (Config.soundWhenNotify) {
+                        Utils.playSoundForEveryone(SoundTypes.BLOCK_STONE_BUTTON_CLICK_ON);
+                    }
                 }
 
                 if (Config.enableBossBar && next[0] == Config.startBossBar){
@@ -107,6 +109,11 @@ public class CleanItemTaskScheduler {
                 .percent(1F)
                 .color(barColor);
 
+    }
+
+    public void cancel(){
+        this.task.cancel();
+        this.bars.forEach(serverBossBar -> serverBossBar.setVisible(false));
     }
 
 

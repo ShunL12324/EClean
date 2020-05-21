@@ -11,7 +11,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 public class Check implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-        new CleanBlockTask();
+        new CleanBlockTask(src);
         return CommandResult.success();
     }
 

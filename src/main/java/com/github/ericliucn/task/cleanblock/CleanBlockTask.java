@@ -1,32 +1,34 @@
 package com.github.ericliucn.task.cleanblock;
 
-import com.flowpowered.math.vector.Vector3i;
+import com.flowpowered.math.vector.Vector3d;
 import com.github.ericliucn.Main;
 import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
-import com.google.inject.internal.cglib.core.$DefaultNamingPolicy;
-import net.minecraft.util.math.Vec3i;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.event.Event;
+import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class CleanBlockTask {
 
     public EventListener<ChangeBlockEvent.Modify> listener = new BlockListener();
 
-    public CleanBlockTask(){
-        Utils.BLOCK_TICK_COUNT.clear();
-        Utils.registerListener(ChangeBlockEvent.Modify.class, listener);
-        this.unregister();
+    public CleanBlockTask(CommandSource source){
+        if (!Utils.IS_CHECK_TASK_CURRENTLY_ON) {
+            Utils.BLOCK_TICK_COUNT.clear();
+            Utils.IS_CHECK_TASK_CURRENTLY_ON = true;
+            Utils.registerListener(ChangeBlockEvent.Modify.class, listener);
+            this.unregister();
+        }else {
+            source.sendMessage(Utils.formatStr(Config.msg_last_task_not_finished));
+        }
     }
 
     private void unregister(){
@@ -34,19 +36,41 @@ public class CleanBlockTask {
                 .delay(5, TimeUnit.SECONDS)
                 .execute(()->{
                     Utils.unregisterListener(listener);
-                    outputResult();
+                    processResult();
+                    Utils.IS_CHECK_TASK_CURRENTLY_ON = false;
                 })
                 .submit(Main.instance);
     }
 
-    private void outputResult(){
-        Utils.BLOCK_TICK_COUNT.forEach(((blockSnapshot, integer) -> {
-            Vector3i position = blockSnapshot.getPosition();
-            Text name = blockSnapshot.get(Keys.DISPLAY_NAME).orElse(Text.of("UNKNOW"));
-            Sponge.getServer().getBroadcastChannel().send(
-                    Text.join(Text.of(position.getX(),",", position.getY(), ",", position.getZ(),
-                            "的", name, "在5秒内刷新了", integer, "次"))
-            );
+    private void processResult(){
+        Utils.BLOCK_TICK_COUNT.forEach(((location, integer) -> {
+            World world = location.getExtent();
+            Vector3d position = location.getPosition();
+            String name = location.getBlock().getType().getTranslation().get();
+            String id = location.getBlockType().getId();
+            int limit = Config.blocksNeedWatch.get(id);
+            float tickRate = integer/5F;
+            if (tickRate > limit){
+                Text report = Utils.formatStr(
+                        Config.msg_block_report
+                                .replace("{world_name}", world.getName())
+                                .replace("{block_position}", position.toString())
+                                .replace("{block_name}", name)
+                                .replace("{tick_rate}", String.valueOf(tickRate))
+                );
+
+                Text actionReport = report.toBuilder()
+                        .onHover(TextActions.showText(Utils.formatStr("&b点击传送到该位置")))
+                        .onClick(TextActions.runCommand("/tppos "+ position.getX() + " "+ position.getY() + " " + position.getZ()))
+                        .build();
+
+                Sponge.getServer().getBroadcastChannel().send(actionReport);
+
+                if (Config.cleanBlock){
+                    location.removeBlock();
+                    Utils.broadCastWithPapi(Config.msg_block_removed.replace("{block_name}", name), false);
+                }
+            }
         }));
     }
 

@@ -13,8 +13,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 public class Config {
@@ -32,6 +33,9 @@ public class Config {
     public static String msg_clean_finished_hover;
     public static String msg_inv_title;
     public static String msg_item_has_taken;
+    public static String msg_last_task_not_finished;
+    public static String msg_block_report;
+    public static String msg_block_removed;
 
     //清理间隔时间
     public static int interval;
@@ -56,11 +60,17 @@ public class Config {
     public static List<String> skipItems;
     //移除物品动画
     public static boolean particleEffect;
+    //提醒时的音效
+    public static boolean soundWhenNotify;
 
     //需要检测更新频率的方块
-    public static List<String> blocksNeedWatch = new ArrayList<>();
-    //是否开启自动清理高频方块
+    public static Map<String, Integer> blocksNeedWatch = new HashMap<>();
+    //是否开启自动检测方块
     public static boolean isEnableCleanBlock;
+    //是否清理高频方块
+    public static boolean cleanBlock;
+    //检测间隔
+    public static int cleanBlockInterval;
 
 
     public static void init() throws IOException, ObjectMappingException {
@@ -97,9 +107,16 @@ public class Config {
         skipItems = rootNode.getNode("ItemClean", "Filter", "Items").getList(TypeToken.of(String.class));
         barColor = rootNode.getNode("ItemClean", "NotifyBossBar", "Color").getString();
         particleEffect = rootNode.getNode("ItemClean", "ParticleEffectWhenItemRemove").getBoolean();
+        soundWhenNotify = rootNode.getNode("ItemClean", "SoundWhenNotify").getBoolean();
 
-        blocksNeedWatch = rootNode.getNode("CheckBlock", "Blocks").getList(TypeToken.of(String.class));
+        blocksNeedWatch.clear();
+        rootNode.getNode("CheckBlock", "Blocks").getList(TypeToken.of(String.class)).forEach(s -> {
+            String[] strings = s.split(",");
+            blocksNeedWatch.put(strings[0], Integer.parseInt(strings[1]));
+        });
         isEnableCleanBlock = rootNode.getNode("CheckBlock", "Enable").getBoolean();
+        cleanBlock = rootNode.getNode("CheckBlock", "ClearBlock").getBoolean();
+        cleanBlockInterval = rootNode.getNode("CheckBlock", "Interval").getInt();
 
         //msg
         msg_notify = Config.msg.getProperty("CleanNotify");
@@ -108,6 +125,9 @@ public class Config {
         msg_clean_finished_hover = Config.msg.getProperty("CleanFinishedOnHover");
         msg_inv_title = Config.msg.getProperty("InventoryTitle");
         msg_item_has_taken = Config.msg.getProperty("ItemHasBeenTakenByOthers");
+        msg_last_task_not_finished = Config.msg.getProperty("LastTaskNotFinished");
+        msg_block_report = Config.msg.getProperty("BlockReport");
+        msg_block_removed = Config.msg.getProperty("BlockHasBeenRemoved");
     }
 
     public static void save() throws IOException{
