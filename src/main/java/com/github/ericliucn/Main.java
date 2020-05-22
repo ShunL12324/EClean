@@ -55,7 +55,7 @@ public class Main {
     public CleanBlockTaskScheduler cleanBlockTaskScheduler;
     public static int LAST_CLEANED_ITEM_COUNT = 0;
     public static int NEXT_CLEAN_ITEM_TIME = 0;
-    public static Map<Location<World>, Integer> BLOCK_TICK_COUNT = new HashMap<>();
+    public static Map<Location<World>, Map<String, Double>> BLOCK_TICK_COUNT = new HashMap<>();
     public static boolean IS_CHECK_TASK_CURRENTLY_ON = false;
 
     @Listener

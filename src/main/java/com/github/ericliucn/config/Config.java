@@ -35,7 +35,7 @@ public class Config {
     public static String msg_item_has_taken;
     public static String msg_last_task_not_finished;
     public static String msg_block_report;
-    public static String msg_block_removed;
+    public static String msg_block_check_task_start;
 
     //清理间隔时间
     public static int interval;
@@ -62,15 +62,21 @@ public class Config {
     public static boolean particleEffect;
     //提醒时的音效
     public static boolean soundWhenNotify;
+    //Mod支持
+    public static boolean modSupport;
 
     //需要检测更新频率的方块
-    public static Map<String, Integer> blocksNeedWatch = new HashMap<>();
+    public static Map<String, Double> blocksNeedWatch = new HashMap<>();
     //是否开启自动检测方块
     public static boolean isEnableCleanBlock;
     //是否清理高频方块
     public static boolean cleanBlock;
     //检测间隔
     public static int cleanBlockInterval;
+    //黑名单模式
+    public static boolean blackListMode;
+    //黑名单检测刷新限制
+    public static double blackListModeTickRate;
 
 
     public static void init() throws IOException, ObjectMappingException {
@@ -108,15 +114,18 @@ public class Config {
         barColor = rootNode.getNode("ItemClean", "NotifyBossBar", "Color").getString();
         particleEffect = rootNode.getNode("ItemClean", "ParticleEffectWhenItemRemove").getBoolean();
         soundWhenNotify = rootNode.getNode("ItemClean", "SoundWhenNotify").getBoolean();
+        modSupport = rootNode.getNode("ItemClean", "ModSupport").getBoolean();
 
         blocksNeedWatch.clear();
         rootNode.getNode("CheckBlock", "Blocks").getList(TypeToken.of(String.class)).forEach(s -> {
             String[] strings = s.split(",");
-            blocksNeedWatch.put(strings[0], Integer.parseInt(strings[1]));
+            blocksNeedWatch.put(strings[0], Double.parseDouble(strings[1]));
         });
         isEnableCleanBlock = rootNode.getNode("CheckBlock", "Enable").getBoolean();
         cleanBlock = rootNode.getNode("CheckBlock", "ClearBlock").getBoolean();
         cleanBlockInterval = rootNode.getNode("CheckBlock", "Interval").getInt();
+        blackListMode = rootNode.getNode("CheckBlock", "BlackListMode").getBoolean();
+        blackListModeTickRate = rootNode.getNode("CheckBlock", "BlackListModeTickRate").getDouble();
 
         //msg
         msg_notify = Config.msg.getProperty("CleanNotify");
@@ -127,7 +136,7 @@ public class Config {
         msg_item_has_taken = Config.msg.getProperty("ItemHasBeenTakenByOthers");
         msg_last_task_not_finished = Config.msg.getProperty("LastTaskNotFinished");
         msg_block_report = Config.msg.getProperty("BlockReport");
-        msg_block_removed = Config.msg.getProperty("BlockHasBeenRemoved");
+        msg_block_check_task_start = Config.msg.getProperty("BlockCheckTaskStart");
     }
 
     public static void save() throws IOException{

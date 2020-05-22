@@ -6,12 +6,19 @@ import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
+import org.spongepowered.api.data.DataQuery;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
+import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CleanBlockTask {
@@ -31,9 +38,10 @@ public class CleanBlockTask {
 
     private void closeChecker(){
         Sponge.getScheduler().createTaskBuilder()
-                .delay(5, TimeUnit.SECONDS)
+                .delay(2, TimeUnit.SECONDS)
                 .execute(()->{
                     Utils.unregisterListener(listener);
+                    if (!Main.IS_CHECK_TASK_CURRENTLY_ON) return;
                     this.processResult();
                     Main.IS_CHECK_TASK_CURRENTLY_ON = false;
                 })
@@ -44,32 +52,77 @@ public class CleanBlockTask {
         Main.BLOCK_TICK_COUNT.forEach(((location, integer) -> {
             World world = location.getExtent();
             Vector3d position = location.getPosition();
-            String name = location.getBlock().getType().getTranslation().get();
-            String id = location.getBlockType().getId();
-            int limit = Config.blocksNeedWatch.get(id);
-            float tickRate = integer/5F;
-            if (tickRate > limit){
-                Text report = Utils.formatStr(
-                        Config.msg_block_report
-                                .replace("{world_name}", world.getName())
-                                .replace("{block_position}", position.toString())
-                                .replace("{block_name}", name)
-                                .replace("{tick_rate}", String.valueOf(tickRate))
-                );
+            String name = location.getBlock().getType().getId();
+            String strPosition = position.getX() + "/" + position.getY() + "/" + position.getZ();
 
-                Text actionReport = report.toBuilder()
+            double limit = Main.BLOCK_TICK_COUNT.get(location).get("limit");
+            double count = Main.BLOCK_TICK_COUNT.get(location).get("count");
+            double tickRate = count/2D;
+            if (tickRate > limit){
+                String blockReport = Config.msg_block_report
+                        .replace("{world_name}", world.getName())
+                        .replace("{block_position}", strPosition)
+                        .replace("{block_name}", name)
+                        .replace("{tick_rate}", String.valueOf(tickRate));
+
+                //get around player if present
+                Player aroundPlayer = getPlayerAround(location);
+                if (aroundPlayer!=null){
+                    blockReport = blockReport.replace("{around_player}", aroundPlayer.getName());
+                }else {
+                    blockReport = blockReport.replace("{around_player}", "");
+                }
+
+                //check if it needed to remove block
+                if (Config.cleanBlock){
+                    blockReport = blockReport.replace("{is_cleaned}", "YES");
+                    location.removeBlock();
+                }else {
+                    blockReport = blockReport.replace("{is_cleaned}", "NO");
+                }
+
+                //create List of text
+                List<Text> reports = new ArrayList<>();
+                String[] blockReports = blockReport.split(",");
+                Arrays.stream(blockReports).forEach(s -> {
+                    reports.add(Utils.formatStr(s));
+                });
+
+                Text tpButton = Utils.formatStr("&d[ECLEAN] &e>>>&a[TP]&e<<<")
+                        .toBuilder()
                         .onHover(TextActions.showText(Utils.formatStr("&b点击传送到该位置")))
                         .onClick(TextActions.runCommand("/tppos "+ position.getX() + " "+ position.getY() + " " + position.getZ()))
                         .build();
 
-                Sponge.getServer().getBroadcastChannel().send(actionReport);
+                reports.add(tpButton);
 
-                if (Config.cleanBlock){
-                    location.removeBlock();
-                    Utils.broadCastWithPapi(Config.msg_block_removed.replace("{block_name}", name), false);
-                }
+                Sponge.getServer().getOnlinePlayers().forEach(player -> {
+
+                    PaginationList.builder()
+                            .contents(reports)
+                            .title(Utils.formatStr("&d[ECLEAN]"))
+                            .padding(Utils.formatStr("&a="))
+                            .sendTo(player);
+
+                });
             }
         }));
+    }
+
+    private static Player getPlayerAround(Location<World> location){
+        World world = location.getExtent();
+        for (Player player:world.getPlayers()
+             ) {
+            double PX = player.getPosition().getX();
+            double PZ = player.getPosition().getZ();
+            double LX = location.getX();
+            double LZ = location.getZ();
+
+            if (Math.abs(PX - LX) < 10 && Math.abs(PZ - LZ) < 10){
+                return player;
+            }
+        }
+        return null;
     }
 
 }

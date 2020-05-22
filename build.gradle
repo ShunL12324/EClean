@@ -11,8 +11,17 @@ buildscript {
     }
 }
 
+
 plugins {
     id 'org.spongepowered.plugin' version '0.9.0'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
+    id 'java'
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
 }
 
 tasks.withType(JavaCompile) {
@@ -29,10 +38,25 @@ dependencies {
     compile 'org.spongepowered:spongeforge:1.12.2-2838-7.2.0:dev'
     annotationProcessor 'org.spongepowered:spongeforge:1.12.2-2838-7.2.0:dev'
     compile files('libs/TeslaPowered-s7.1-v1.1.6.jar')
-    compile files('libs/PlaceholderAPI-4.5.1.jar')
+    implementation 'com.github.ronaldburns:PlaceholderAPI:4.5.1'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+
+/*
+shadowJar{
+    relocate("com.mcsimonflash", "mylib.mcsimonflash")
+
+}
+
+configurations {
+    runtime.exclude module: 'spongeforge'
+    runtime.exclude group: 'com.github.ronaldburns'
+}
+
+ */
+
+
 
 minecraft {
     // TODO: Configure Forge build here

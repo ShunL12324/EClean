@@ -44,6 +44,10 @@ public class Utils {
         return Main.instance.service.replacePlaceholders(formatStr(string), source, player);
     }
 
+    public static Text papiReplace(Text text, CommandSource source, Player player){
+        return Main.instance.service.replacePlaceholders(text, source, player);
+    }
+
     public static void playSoundForEveryone(SoundType soundType){
         for (Player player:Sponge.getServer().getOnlinePlayers()){
             player.playSound(soundType, player.getPosition(), 1D);

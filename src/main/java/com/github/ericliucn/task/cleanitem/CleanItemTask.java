@@ -6,17 +6,20 @@ import com.github.ericliucn.inventory.CleanedItemInv;
 import com.github.ericliucn.utils.Utils;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.effect.sound.SoundTypes;
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.World;
-import org.spongepowered.common.item.inventory.util.ItemStackUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 //clean dropped item task
 public class CleanItemTask {
@@ -45,7 +48,7 @@ public class CleanItemTask {
     private void cleanItem(World world){
         world.getEntities().forEach(
                 entity -> {
-                    if (entity.getType().equals(EntityTypes.ITEM)){
+                    if (isItem(entity)){
                         //item entity
                         Item item = (Item)entity;
                         //item item stack
@@ -75,6 +78,19 @@ public class CleanItemTask {
         );
     }
 
+    private boolean isItem(Entity entity){
+        if (Config.modSupport){
+            if (entity.getType().equals(EntityTypes.ITEM)){
+                Item item = (Item)entity;
+                Optional<Boolean> persist = item.get(Keys.PERSISTS);
+                return !persist.isPresent() || !persist.get();
+            }
+            return false;
+        }else {
+            return entity instanceof Item;
+        }
+    }
+
 
     private void message(){
         Utils.broadCastWithPapi(Config.msg_clean_finished, true);
@@ -84,7 +100,8 @@ public class CleanItemTask {
     }
     
     private static boolean itemHasNBT(ItemStack itemStack){
-        return ItemStackUtil.toNative(itemStack).hasTagCompound();
+        Optional<? extends Map<?, ?>> optionalMap = itemStack.toContainer().getMap(DataQuery.of("UnsafeData"));
+        return optionalMap.isPresent() && optionalMap.get().size() > 0;
     }
 
     private static boolean itemHasLore(ItemStack itemStack){
@@ -104,7 +121,7 @@ public class CleanItemTask {
 
     private static boolean isSkipItem(ItemStack itemStack){
         String id = itemStack.getType().getId();
-        String meta = String.valueOf(ItemStackUtil.toNative(itemStack).getMetadata());
+        String meta = String.valueOf(itemStack.toContainer().get(DataQuery.of("UnsafeDamage")).orElse("0"));
         return Config.skipItems.contains(id + ":" + meta);
     }
 

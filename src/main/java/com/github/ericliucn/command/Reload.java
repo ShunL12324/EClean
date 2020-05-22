@@ -23,6 +23,7 @@ public class Reload implements CommandExecutor {
             Main.instance.cleanItemTaskScheduler = new CleanItemTaskScheduler();
             Main.instance.cleanBlockTaskScheduler.cancel();
             Main.instance.cleanBlockTaskScheduler = new CleanBlockTaskScheduler();
+            Main.IS_CHECK_TASK_CURRENTLY_ON = false;
         }catch (IOException | ObjectMappingException e){
             e.printStackTrace();
         }
