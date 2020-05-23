@@ -112,7 +112,7 @@ key_key.toggleFlight:0
 key_key.toggleDislocator:0
 key_key.cycleDigAOE:0
 key_key.cycleAttackAOE:0
-soundCategory_master:1.0
+soundCategory_master:0.13576159
 soundCategory_music:1.0
 soundCategory_record:1.0
 soundCategory_weather:1.0
