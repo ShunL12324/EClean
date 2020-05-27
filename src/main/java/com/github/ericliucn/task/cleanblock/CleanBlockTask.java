@@ -6,7 +6,6 @@ import com.github.ericliucn.config.Config;
 import com.github.ericliucn.utils.Utils;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.EventListener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -38,7 +37,7 @@ public class CleanBlockTask {
 
     private void closeChecker(){
         Sponge.getScheduler().createTaskBuilder()
-                .delay(2, TimeUnit.SECONDS)
+                .delayTicks(40)
                 .execute(()->{
                     Utils.unregisterListener(listener);
                     if (!Main.IS_CHECK_TASK_CURRENTLY_ON) return;

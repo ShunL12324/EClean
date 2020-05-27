@@ -43,18 +43,19 @@ dependencies {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-/*
+
 shadowJar{
     relocate("com.mcsimonflash", "mylib.mcsimonflash")
 
 }
+
 
 configurations {
     runtime.exclude module: 'spongeforge'
     runtime.exclude group: 'com.github.ronaldburns'
 }
 
- */
+
 
 
 
